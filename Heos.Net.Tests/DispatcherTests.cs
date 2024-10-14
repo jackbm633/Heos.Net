@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Heos.Net
+namespace Heos.Net.Tests
 {
-    public class Dispatcher
+    [TestClass]
+    public class DispatcherTests
     {
-        public Dictionary<string, List<Func<string, object[], Task>>> Signals { get; private set; } = new Dictionary<string, List<Func<string, object[], Task>>>();
-
-        public void Connect(string signal, Func<string, object[], Task> handler)
+        /// <summary>
+        /// Checks initialising the HEOS client sets properties correctly.
+        /// </summary>
+        [TestMethod]
+        public void Test_Connect()
         {
-            if (!Signals.ContainsKey(signal))
+            // Arrange
+            var dispatcher = new Dispatcher();
+
+            static Task Handler(string _, params object[] args)
             {
-                Signals[signal] = new List<Func<string, object[], Task>>();
+                return Task.CompletedTask;
             }
-            Signals[signal].Add(handler);
+            // Act
+            dispatcher.Connect("TEST", Handler);
+
+            // Assert
+            Assert.IsTrue(dispatcher.Signals["TEST"].Contains(Handler));
         }
     }
 }
