@@ -21,7 +21,7 @@ namespace Heos.Net.Tests
     public class DispatcherTests
     {
         /// <summary>
-        /// Checks initialising the HEOS client sets properties correctly.
+        /// Tests the connect function.
         /// </summary>
         [TestMethod]
         public void Test_Connect()
@@ -39,5 +39,27 @@ namespace Heos.Net.Tests
             // Assert
             Assert.IsTrue(dispatcher.Signals["TEST"].Contains(Handler));
         }
+
+        /// <summary>
+        /// Tests the disconnect function.
+        /// </summary>
+        [TestMethod]
+        public void Test_Disconnect()
+        {
+            // Arrange
+            var dispatcher = new Dispatcher();
+
+            static Task Handler(string _, params object[] args)
+            {
+                return Task.CompletedTask;
+            }
+            var disconnect = dispatcher.Connect("TEST", Handler);
+            // Act
+            disconnect();
+
+            // Assert
+            Assert.IsFalse(dispatcher.Signals["TEST"].Contains(Handler));
+        }
+
     }
 }

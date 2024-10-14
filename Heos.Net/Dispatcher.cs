@@ -23,15 +23,42 @@ namespace Heos.Net
 {
     public class Dispatcher
     {
+        private readonly Func<string, Func<string, object[], Task>, Action> _connect;
+        private readonly string _signalPrefix = string.Empty;
+        private readonly List<Action> _disconnects = new List<Action>();
+
+        public Dispatcher()
+        {
+            _connect = DefaultConnect;
+        }
+
         public Dictionary<string, List<Func<string, object[], Task>>> Signals { get; private set; } = new Dictionary<string, List<Func<string, object[], Task>>>();
 
-        public void Connect(string signal, Func<string, object[], Task> handler)
+        public Action Connect(string signal, Func<string, object[], Task> handler)
+        {
+            var disconnect = _connect(_signalPrefix + signal, handler);
+            _disconnects.Add(disconnect);
+            return disconnect;
+        }
+
+        public Action DefaultConnect(string signal, Func<string, object[], Task> handler)
         {
             if (!Signals.ContainsKey(signal))
             {
                 Signals[signal] = new List<Func<string, object[], Task>>();
             }
             Signals[signal].Add(handler);
+
+            void RemoveDispatcher()
+            {
+                if (Signals[signal].Contains(handler))
+                {
+                    Signals[signal].Remove(handler);
+                }
+            }
+
+            return RemoveDispatcher;
+
         }
     }
 }

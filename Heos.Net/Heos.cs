@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.InteropServices;
 
+[assembly: CLSCompliant(true)]
+[assembly: ComVisible(false)]
 namespace Heos.Net
 {
     public class HeosClient
