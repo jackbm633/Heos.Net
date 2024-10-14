@@ -61,5 +61,33 @@ namespace Heos.Net.Tests
             Assert.IsFalse(dispatcher.Signals["TEST"].Contains(Handler));
         }
 
+        /// <summary>
+        /// Tests the disconnect all function.
+        /// </summary>
+        [TestMethod]
+        public void Test_DisconnectAll()
+        {
+            // Arrange
+            var dispatcher = new Dispatcher();
+
+            static Task Handler(string _, params object[] args)
+            {
+                return Task.CompletedTask;
+            }
+            dispatcher.Connect("TEST", Handler);
+            dispatcher.Connect("TEST", Handler);
+            dispatcher.Connect("TEST2", Handler);
+            dispatcher.Connect("TEST3", Handler);
+
+            // Act
+            dispatcher.DisconnectAll();
+
+            // Assert
+            Assert.IsFalse(dispatcher.Signals["TEST"].Contains(Handler));
+            Assert.IsFalse(dispatcher.Signals["TEST2"].Contains(Handler));
+            Assert.IsFalse(dispatcher.Signals["TEST3"].Contains(Handler));
+
+        }
+
     }
 }

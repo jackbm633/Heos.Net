@@ -32,8 +32,17 @@ namespace Heos.Net
             _connect = DefaultConnect;
         }
 
+        /// <summary>
+        /// Dictionary of registered signals and callbacks.
+        /// </summary>
         public Dictionary<string, List<Func<string, object[], Task>>> Signals { get; private set; } = new Dictionary<string, List<Func<string, object[], Task>>>();
 
+        /// <summary>
+        /// Connects a function to a signal.
+        /// </summary>
+        /// <param name="signal">Signal to connect to the handler.</param>
+        /// <param name="handler">Handler which handles the signal</param>
+        /// <returns>Action, which is used to disconnect.</returns>
         public Action Connect(string signal, Func<string, object[], Task> handler)
         {
             var disconnect = _connect(_signalPrefix + signal, handler);
@@ -41,6 +50,12 @@ namespace Heos.Net
             return disconnect;
         }
 
+        /// <summary>
+        /// Connects a function to a signal.
+        /// </summary>
+        /// <param name="signal">Signal to connect to the handler.</param>
+        /// <param name="handler">Handler which handles the signal</param>
+        /// <returns>Action, which is used to disconnect.</returns>
         public Action DefaultConnect(string signal, Func<string, object[], Task> handler)
         {
             if (!Signals.ContainsKey(signal))
@@ -59,6 +74,17 @@ namespace Heos.Net
 
             return RemoveDispatcher;
 
+        }
+
+        /// <summary>
+        /// Disconnects all connected signals.
+        /// </summary>
+        public void DisconnectAll()
+        {
+            foreach (var action in _disconnects)
+            {
+                action();
+            }
         }
     }
 }
